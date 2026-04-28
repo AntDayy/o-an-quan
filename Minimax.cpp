@@ -1,29 +1,17 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <iomanip>
-#include <string>
-#include <sstream>
 #include <bits/stdc++.h>
 
 using namespace std;
 
-// ==========================================
-// LỚP MOVE: Đại diện cho 1 nước đi
-// ==========================================
 class Move
 {
 public:
     int cell;
-    int direction;  // 1: Phải (CW), -1: Trái (CCW)
-    double winRate; // Ở Minimax, biến này dùng để lưu điểm số đánh giá (Evaluation Score)
+    int direction;
+    double winRate;
 
     Move(int c, int d) : cell(c), direction(d), winRate(0.0) {}
 };
 
-// ==========================================
-// LỚP GAMESTATE: Quản lý trạng thái và luật chơi
-// ==========================================
 class GameState
 {
 private:
@@ -81,7 +69,6 @@ public:
         return currentTurn;
     }
 
-    // Lấy tổng tài sản của P1 (Điểm đã ăn + Quân đang có trên sân nhà)
     int getP1Total() const
     {
         int total = score[0];
@@ -90,7 +77,6 @@ public:
         return total;
     }
 
-    // Lấy tổng tài sản của P2
     int getP2Total() const
     {
         int total = score[1];
@@ -182,15 +168,11 @@ public:
     }
 };
 
-// ==========================================
-// LỚP MINIMAXAI: AI sử dụng Minimax + Alpha-Beta
-// ==========================================
 class MinimaxAI
 {
 private:
     int maxDepth;
 
-    // Hàm đánh giá thế cờ (Heuristic)
     int evaluate(GameState state, int myTurn)
     {
         if (state.isGameOver())
@@ -202,7 +184,6 @@ private:
         return (myTurn == 0) ? (p1Score - p2Score) : (p2Score - p1Score);
     }
 
-    // Thuật toán duyệt cây Minimax
     int minimax(GameState state, int depth, int alpha, int beta, bool isMaximizing, int myTurn)
     {
         if (depth == 0 || state.isGameOver())
@@ -227,7 +208,7 @@ private:
                 maxEval = max(maxEval, eval);
                 alpha = max(alpha, eval);
                 if (beta <= alpha)
-                    break; // Cắt tỉa Alpha
+                    break;
             }
             return maxEval;
         }
@@ -242,14 +223,14 @@ private:
                 minEval = min(minEval, eval);
                 beta = min(beta, eval);
                 if (beta <= alpha)
-                    break; // Cắt tỉa Beta
+                    break;
             }
             return minEval;
         }
     }
 
 public:
-    MinimaxAI(int depth = 7) : maxDepth(depth) {} // Khuyến nghị depth từ 6 đến 9
+    MinimaxAI(int depth = 7) : maxDepth(depth) {}
 
     vector<Move> findBestMoves(GameState currentState)
     {
@@ -263,12 +244,10 @@ public:
         {
             GameState nextState = currentState;
             nextState.makeMove(m);
-            // Sau nước đi của mình, sẽ đến lượt đối thủ (isMaximizing = false)
             int moveValue = minimax(nextState, maxDepth - 1, -999999, 999999, false, myTurn);
-            m.winRate = moveValue; // Lưu điểm vào winRate để tái sử dụng cấu trúc cũ
+            m.winRate = moveValue;
         }
 
-        // Sắp xếp các nước đi theo điểm đánh giá giảm dần
         sort(moves.begin(), moves.end(), [](const Move &a, const Move &b)
              { return a.winRate > b.winRate; });
 
@@ -276,9 +255,6 @@ public:
     }
 };
 
-// ==========================================
-// HÀM MAIN: Giao diện vòng lặp liên tục
-// ==========================================
 int main()
 {
     while (true)
@@ -321,7 +297,6 @@ int main()
 
         GameState game(board, 0, 0, turn);
 
-        // Khởi tạo Minimax với độ sâu 7
         MinimaxAI ai(7);
 
         cout << "\nDang suy nghi bang Minimax Alpha-Beta...\n"
