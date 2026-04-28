@@ -1,31 +1,17 @@
-#include <iostream>
-#include <vector>
-#include <ctime>
-#include <cstdlib>
-#include <algorithm>
-#include <iomanip>
-#include <string>
-#include <sstream>
 #include <bits/stdc++.h>
 
 using namespace std;
 
-// ==========================================
-// LỚP MOVE: Đại diện cho 1 nước đi
-// ==========================================
 class Move
 {
 public:
     int cell;
-    int direction; // 1: Phải (Cùng chiều kim đồng hồ), -1: Trái
+    int direction;
     double winRate;
 
     Move(int c, int d) : cell(c), direction(d), winRate(0.0) {}
 };
 
-// ==========================================
-// LỚP GAMESTATE: Quản lý trạng thái và luật chơi
-// ==========================================
 class GameState
 {
 private:
@@ -108,7 +94,6 @@ public:
 
         while (true)
         {
-            // 1. Rải quân
             while (hand > 0)
             {
                 current = (current + dir + 12) % 12;
@@ -116,7 +101,6 @@ public:
                 hand--;
             }
 
-            // 2. Kiểm tra ô tiếp theo
             int next = (current + dir + 12) % 12;
 
             if (board[next] > 0 && next != 0 && next != 6)
@@ -177,9 +161,6 @@ public:
     }
 };
 
-// ==========================================
-// LỚP MONTECARLOAI: Trí tuệ nhân tạo
-// ==========================================
 class MonteCarloAI
 {
 private:
@@ -243,9 +224,6 @@ public:
     }
 };
 
-// ==========================================
-// HÀM MAIN: Giao diện vòng lặp liên tục
-// ==========================================
 int main()
 {
     srand(time(0));
@@ -258,13 +236,11 @@ int main()
         string inputStr;
         getline(cin, inputStr);
 
-        // Kiểm tra lệnh thoát
         if (inputStr == "end" || inputStr == "End" || inputStr == "END")
         {
             break;
         }
 
-        // Dùng stringstream để bóc tách 12 số từ chuỗi nhập vào
         stringstream ss(inputStr);
         vector<int> board(12);
         bool isValidInput = true;
@@ -280,17 +256,16 @@ int main()
         if (!isValidInput)
         {
             cout << "Loi: Vui long nhap dung 12 so hoac 'end'!" << endl;
-            continue; // Quay lại đầu vòng lặp để nhập lại
+            continue;
         }
 
         int turn;
         cout << "Luot di hien tai (1 cho P1, 2 cho P2): ";
         cin >> turn;
 
-        // Xóa bộ nhớ đệm (buffer) của cin để hàm getline() ở vòng lặp sau hoạt động đúng
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-        turn -= 1; // Chuyển về 0 hoặc 1
+        turn -= 1;
 
         GameState game(board, 0, 0, turn);
         MonteCarloAI ai(10000);
@@ -317,7 +292,7 @@ int main()
             }
             cout << "------------------------------------------" << endl;
             cout << "=> Loi khuyen: Nen di o " << results[0].cell
-                 << " huong " << ((results[0].direction == 1) ? "Phai" : "Trai") << endl;
+                 << " huong " << ((results[0].direction == 1) ? "phai" : "trai") << endl;
         }
     }
 
